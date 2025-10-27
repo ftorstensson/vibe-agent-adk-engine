@@ -1,3 +1,13 @@
+/*
+ * Vibe Coder Frontend - App.tsx
+ * Version: 2.0 (The ADK Pivot)
+ * Last Updated: 2025-10-26
+ *
+ * This version connects the frontend to the live, ADK-based backend service
+ * on Cloud Run and resolves all initial TypeScript compilation errors from the
+ * original sample code.
+ */
+
 import { useState, useRef, useCallback, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { WelcomeScreen } from "@/components/WelcomeScreen";
@@ -13,6 +23,8 @@ interface MessageWithAgent {
   finalReportWithCitations?: boolean;
 }
 
+// NOTE: The interfaces below are currently unused but are kept for potential future reference.
+/*
 interface AgentMessage {
   parts: { text: string }[];
   role: string;
@@ -33,6 +45,7 @@ interface AgentResponse {
     };
   };
 }
+*/
 
 interface ProcessedEvent {
   title: string;
@@ -82,7 +95,8 @@ export default function App() {
 
   const createSession = async (): Promise<{userId: string, sessionId: string, appName: string}> => {
     const generatedSessionId = uuidv4();
-    const response = await fetch(`/api/apps/app/users/u_999/sessions/${generatedSessionId}`, {
+    // [DEFINITIVE FIX] Replace relative URL with absolute Service URL
+    const response = await fetch(`https://vibe-agent-adk-engine-534939227554.australia-southeast1.run.app/api/apps/app/users/u_999/sessions/${generatedSessionId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -103,8 +117,8 @@ export default function App() {
 
   const checkBackendHealth = async (): Promise<boolean> => {
     try {
-      // Use the docs endpoint or root endpoint to check if backend is ready
-      const response = await fetch("/api/docs", {
+      // [DEFINITIVE FIX] Replace relative URL with absolute Service URL
+      const response = await fetch("https://vibe-agent-adk-engine-534939227554.australia-southeast1.run.app/api/docs", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -282,7 +296,8 @@ export default function App() {
     }
   };
 
-  const handleSubmit = useCallback(async (query: string, model: string, effort: string) => {
+  // [DEFINITIVE FIX] Correct the function signature to match what the components expect.
+  const handleSubmit = useCallback(async (query: string) => {
     if (!query.trim()) return;
 
     setIsLoading(true);
@@ -323,7 +338,8 @@ export default function App() {
 
       // Send the message with retry logic
       const sendMessage = async () => {
-        const response = await fetch("/api/run_sse", {
+        // [DEFINITIVE FIX] Replace relative URL with absolute Service URL
+        const response = await fetch("https://vibe-agent-adk-engine-534939227554.australia-southeast1.run.app/api/run_sse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -418,7 +434,7 @@ export default function App() {
       }]);
       setIsLoading(false);
     }
-  }, [processSseEventData]);
+  }, [userId, sessionId, appName, processSseEventData]); // Updated dependencies
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -465,18 +481,6 @@ export default function App() {
     setMessageEvents(new Map());
     setWebsiteCount(0);
     window.location.reload();
-  }, []);
-
-  // Scroll to bottom when messages update
-  const scrollToBottom = useCallback(() => {
-    if (scrollAreaRef.current) {
-      const scrollViewport = scrollAreaRef.current.querySelector(
-        "[data-radix-scroll-area-viewport]"
-      );
-      if (scrollViewport) {
-        scrollViewport.scrollTop = scrollViewport.scrollHeight;
-      }
-    }
   }, []);
 
   const BackendLoadingScreen = () => (

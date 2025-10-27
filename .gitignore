@@ -1,0 +1,17 @@
+# Python Virtual Environment
+.venv/
+__pycache__/
+*.pyc
+
+# Node.js Dependencies
+node_modules/
+frontend/node_modules/
+
+# Frontend Build Output
+frontend/dist/
+
+# macOS Junk
+.DS_Store
+
+# IDE / Editor specific
+.vscode/
