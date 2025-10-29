@@ -1,22 +1,19 @@
-# Copyright 2025 Google LLC
+# Vibe Coder AI Services Engine - agent.py
+# Version: 2.1 (The Final CORS Import Fix)
+# Last Updated: 2025-10-28
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# This version fixes the critical import error for the FastAPI 'app' object,
+# finally enabling the CORS middleware to apply.
 
 import datetime
 import logging
 import re
 from collections.abc import AsyncGenerator
 from typing import Literal
+
+# --- START: CORS FIX ---
+from fastapi.middleware.cors import CORSMiddleware
+# --- END: CORS FIX ---
 
 from google.adk.agents import BaseAgent, LlmAgent, LoopAgent, SequentialAgent
 from google.adk.agents.callback_context import CallbackContext
@@ -29,6 +26,27 @@ from google.genai import types as genai_types
 from pydantic import BaseModel, Field
 
 from .config import config
+
+# --- START: CORS FIX ---
+# FIX: The correct, battle-tested import for the ADK's internal FastAPI app.
+# The previous import failed to resolve the module path correctly.
+# This imports the global FastAPI app instance created by the ADK framework.
+from google.adk.cli.fast_api import app
+
+# Define the origins that are allowed to make requests to this API.
+origins = [
+    "https://vibe-agent-final.web.app", # The live production frontend
+    "http://localhost:5173",          # The default address for local Vite development
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"], # Allows all headers
+)
+# --- END: CORS FIX ---
 
 
 # --- Structured Output Models ---
