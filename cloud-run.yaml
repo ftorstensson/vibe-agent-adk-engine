@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-      - image: gcr.io/vibe-agent-final/vibe-agent-adk-engine:latest
+      - image: gcr.io/vibe-agent-final/vibe-agent-adk-engine@sha256:8e9bb3e1910542751ae1c326a383edef7f2e05d903c52bbe07fc24311b89c0ad
         command: ["adk"]
         args: ["api_server", "--host", "0.0.0.0", "--port", "8080"]
         resources:
